@@ -582,9 +582,136 @@
     document.getElementById("an-campaigns").innerHTML = AD.campaigns.map(anCampaignBlock).join("");
   }
 
+  // ---------- budget pacer ----------
+  function bpEsc(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function bpStatus(actual, forecast, mode) {
+    if (!forecast || actual == null) return { key: "na", label: "—", variance: 0 };
+    var ratio = actual / forecast;
+    var key;
+    if (mode === "closer") {
+      var dev = Math.abs(ratio - 1);
+      key = dev <= 0.10 ? "green" : (dev <= 0.25 ? "amber" : "red");
+    } else if (mode === "lower") {
+      key = ratio <= 1.10 ? "green" : (ratio <= 1.25 ? "amber" : "red");
+    } else {
+      key = ratio >= 0.90 ? "green" : (ratio >= 0.75 ? "amber" : "red");
+    }
+    return { key: key, label: key.charAt(0).toUpperCase() + key.slice(1), variance: ratio - 1 };
+  }
+
+  function bpMetricCell(value, display, forecast, mode) {
+    var st = bpStatus(value, forecast, mode);
+    var pct = st.variance * 100;
+    var sign = pct > 0 ? "+" : "";
+    var title = st.label + " · " + sign + pct.toFixed(1) + "% vs forecast";
+    return '<td class="bp-actual-cell rag-' + st.key + '" title="' + bpEsc(title) + '">' +
+      '<div class="bp-cell-inner"><span class="bp-cell-value">' + bpEsc(display) + '</span>' +
+      '<span class="bp-rag-pill ' + st.key + '">' + st.label + '</span></div></td>';
+  }
+
+  function buildBudgetPacer() {
+    var campaignName = "Various 6 tCPA";
+    var weeks = DATA.weekly_by_campaign[campaignName] || [];
+    if (!weeks.length) return;
+
+    var dailyBudget = 400;
+    var days = 7;
+    var baselineWeek = "2026-07-27";
+    var baseline = weeks.filter(function (w) { return w.week === baselineWeek; })[0];
+    if (!baseline) return;
+
+    var baseCpc = baseline.cost / baseline.clicks;
+    var baseCvr = baseline.conversions / baseline.clicks;
+    var baseCtr = baseline.clicks / baseline.impr;
+    var weeklySpend = dailyBudget * days;
+    var forecastClicks = weeklySpend / baseCpc;
+    var forecastImpr = forecastClicks / baseCtr;
+    var forecastConv = forecastClicks * baseCvr;
+    var forecastCpl = weeklySpend / forecastConv;
+
+    var forecast = {
+      spend: weeklySpend,
+      impr: forecastImpr,
+      clicks: forecastClicks,
+      avg_cpc: baseCpc,
+      conversions: forecastConv,
+      conv_rate: baseCvr,
+      cost_per_conv: forecastCpl
+    };
+
+    var cards = [
+      ["Daily budget", fmtGBP(dailyBudget)],
+      ["Weekly spend", fmtGBP0(forecast.spend)],
+      ["Impressions", fmtInt(Math.round(forecast.impr))],
+      ["Clicks", fmtInt(Math.round(forecast.clicks))],
+      ["Conversions", forecast.conversions.toFixed(0)],
+      ["Avg. CPC", fmtGBP(forecast.avg_cpc)],
+      ["CVR", fmtPct(forecast.conv_rate)],
+      ["CPL", fmtGBP(forecast.cost_per_conv)]
+    ];
+    document.getElementById("bp-forecast").innerHTML = cards.map(function (c, i) {
+      return '<div class="bp-forecast-card' + (i === 0 ? ' primary' : '') + '">' +
+        '<span class="bp-forecast-label">' + bpEsc(c[0]) + '</span>' +
+        '<strong class="bp-forecast-value">' + bpEsc(c[1]) + '</strong></div>';
+    }).join("");
+
+    var baselineDaily = baseline.cost / days;
+    var baselineUse = baseline.cost / weeklySpend;
+    document.getElementById("bp-insight").innerHTML =
+      '<div class="bp-insight-icon">!</div><div><strong>Early warning already visible:</strong> even the strongest pre-August week spent ' +
+      fmtGBP(baseline.cost) + ' (' + fmtPct(baselineUse) + ' of the £2,800 weekly budget), or about ' +
+      fmtGBP(baselineDaily) + '/day against a £400/day setting. The campaign was efficient, but materially under-delivering.</div>';
+
+    var head = '<thead><tr><th>Week</th><th>Spend</th><th>Impr.</th><th>Clicks</th><th>Avg. CPC</th><th>Conv.</th><th>CVR</th><th>CPL</th></tr></thead>';
+    var body = weeks.map(function (w) {
+      var cplDisplay = w.conversions ? fmtGBP(w.cost_per_conv) : "—";
+      return '<tr>' +
+        '<td class="bp-week">' + bpEsc(fmtWeek(w.week)) + '</td>' +
+        bpMetricCell(w.cost, fmtGBP(w.cost), forecast.spend, "closer") +
+        bpMetricCell(w.impr, fmtInt(w.impr), forecast.impr, "higher") +
+        bpMetricCell(w.clicks, fmtInt(w.clicks), forecast.clicks, "higher") +
+        bpMetricCell(w.avg_cpc, fmtGBP(w.avg_cpc), forecast.avg_cpc, "lower") +
+        bpMetricCell(w.conversions, w.conversions.toFixed(1), forecast.conversions, "higher") +
+        bpMetricCell(w.clicks ? w.conversions / w.clicks : 0, fmtPct(w.clicks ? w.conversions / w.clicks : 0), forecast.conv_rate, "higher") +
+        bpMetricCell(w.conversions ? w.cost / w.conversions : 999999, cplDisplay, forecast.cost_per_conv, "lower") +
+        '</tr>';
+    }).join("");
+    document.getElementById("bp-weekly-wrap").innerHTML = '<table class="bp-table">' + head + '<tbody>' + body + '</tbody></table>';
+
+    var monthlySpend = dailyBudget * 30;
+    var monthlyClicks = monthlySpend / baseCpc;
+    var monthlyImpr = monthlyClicks / baseCtr;
+    var monthlyConv = monthlyClicks * baseCvr;
+
+    document.getElementById("bp-model-details").innerHTML =
+      '<div class="bp-model-grid">' +
+        '<div class="bp-model-block"><h3>Benchmark week</h3><p><strong>27 Jul 2026</strong></p>' +
+          '<dl><dt>Spend</dt><dd>' + fmtGBP(baseline.cost) + '</dd><dt>Clicks</dt><dd>' + fmtInt(baseline.clicks) +
+          '</dd><dt>Impressions</dt><dd>' + fmtInt(baseline.impr) + '</dd><dt>Conversions</dt><dd>' + baseline.conversions.toFixed(2) + '</dd></dl></div>' +
+        '<div class="bp-model-block"><h3>Locked rates</h3>' +
+          '<dl><dt>CPC</dt><dd>' + fmtGBP(baseCpc) + '</dd><dt>CTR</dt><dd>' + fmtPct(baseCtr) +
+          '</dd><dt>CVR</dt><dd>' + fmtPct(baseCvr) + '</dd><dt>CPL</dt><dd>' + fmtGBP(forecastCpl) + '</dd></dl></div>' +
+        '<div class="bp-model-block"><h3>30-day view</h3>' +
+          '<dl><dt>Spend</dt><dd>' + fmtGBP0(monthlySpend) + '</dd><dt>Clicks</dt><dd>' + fmtInt(Math.round(monthlyClicks)) +
+          '</dd><dt>Impressions</dt><dd>' + fmtInt(Math.round(monthlyImpr)) + '</dd><dt>Conversions</dt><dd>' + monthlyConv.toFixed(0) + '</dd></dl></div>' +
+      '</div>' +
+      '<div class="bp-formula-box"><strong>Forecast formulas</strong>' +
+        '<span>CPC = £1,825.04 ÷ 821</span><span>CVR = 304.67 ÷ 821</span><span>CTR = 821 ÷ 7,277</span>' +
+        '<span>Weekly spend = £400 × 7</span><span>Clicks = spend ÷ CPC</span><span>Impressions = clicks ÷ CTR</span>' +
+        '<span>Conversions = clicks × CVR</span><span>CPL = spend ÷ conversions</span></div>' +
+      '<p class="bp-method-note"><strong>RAG logic:</strong> Spend is green within ±10% of forecast, amber within ±25%, otherwise red. ' +
+      'Impressions, clicks, conversions and CVR are green at ≥90% of forecast, amber at 75–89.9%, otherwise red. ' +
+      'CPC and CPL are green at ≤110% of forecast, amber at 110–125%, otherwise red. ' +
+      'This is a pacing benchmark, not a guarantee of linear scale.</p>';
+  }
+
   buildKpis();
   buildCharts();
   buildTables();
   buildAbout();
   buildAnalysis();
+  buildBudgetPacer();
 })();
