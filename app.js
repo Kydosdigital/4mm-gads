@@ -608,8 +608,7 @@
     var sign = pct > 0 ? "+" : "";
     var title = st.label + " · " + sign + pct.toFixed(1) + "% vs forecast";
     return '<td class="bp-actual-cell rag-' + st.key + '" title="' + bpEsc(title) + '">' +
-      '<div class="bp-cell-inner"><span class="bp-cell-value">' + bpEsc(display) + '</span>' +
-      '<span class="bp-rag-pill ' + st.key + '">' + st.label + '</span></div></td>';
+      '<div class="bp-cell-inner"><span class="bp-cell-value">' + bpEsc(display) + '</span></div></td>';
   }
 
   function buildBudgetPacer() {
