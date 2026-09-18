@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Google Ads — Account overview</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path fill=%22%234285F4%22 d=%22M3 13h6v8H3z%22/><path fill=%22%23FBBC04%22 d=%229 8h6v13H9z%22/><path fill=%22%2334A853%22 d=%2215 3h6v18h-6z%22/></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="icon-btn menu-btn" aria-label="Menu">
+      <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" stroke="#5f6368" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <div class="wordmark">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#4285F4" d="M3 13h6v8H3z"/>
+        <path fill="#FBBC04" d="M9 8h6v13H9z"/>
+        <path fill="#34A853" d="M15 3h6v18h-6z"/>
+      </svg>
+      <span><b>Google</b> Ads</span>
+    </div>
+  </div>
+
+  <div class="topbar-search">
+    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#5f6368" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5L20.49 19l-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>
+    <input type="text" placeholder="Search change history, campaigns and more" disabled />
+  </div>
+
+  <div class="topbar-right">
+    <span class="pill demo-pill">Teaching demo · data from uploaded report</span>
+    <div class="avatar">M</div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="sidenav">
+    <button class="nav-item active" data-tab="overview">
+      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 13h6V4H4v9zm0 7h6v-5H4v5zm10 0h6V11h-6v9zm0-16v5h6V4h-6z"/></svg>
+      <span>Overview</span>
+    </button>
+    <button class="nav-item" data-tab="campaigns">
+      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 3h8v8H3V3zm10 0h8v5h-8V3zM3 13h8v8H3v-8zm10 3h8v5h-8v-5z"/></svg>
+      <span>Campaigns</span>
+    </button>
+    <button class="nav-item" data-tab="terms">
+      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span>Search terms</span>
+    </button>
+    <button class="nav-item" data-tab="analysis">
+      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 2a1 1 0 0 0-1 1v1H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V3a1 1 0 1 0-2 0v1H9V3a1 1 0 0 0 0-1zM7 11h2v2H7v-2zm4 0h6v2h-6v-2zm-4 4h2v2H7v-2zm4 0h6v2h-6v-2z"/></svg>
+      <span>Analysis</span>
+    </button>
+    <button class="nav-item" data-tab="about">
+      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg>
+      <span>About this account</span>
+    </button>
+  </nav>
+
+  <main class="content">
+
+    <!-- ================= OVERVIEW ================= -->
+    <section id="tab-overview" class="tab-panel active">
+      <div class="page-head">
+        <h1>Account overview</h1>
+        <div class="date-range" id="date-range-label">1 Jun 2026 – 6 Sep 2026</div>
+      </div>
+
+      <div id="kpi-row" class="kpi-row"></div>
+
+      <div class="chart-grid">
+        <div class="card chart-card">
+          <div class="card-head">
+            <h2>Cost &amp; conversions</h2>
+            <span class="card-sub">Weekly, whole account</span>
+          </div>
+          <div class="chart-box"><canvas id="chart-cost-conv"></canvas></div>
+        </div>
+        <div class="card chart-card">
+          <div class="card-head">
+            <h2>Clicks &amp; impressions</h2>
+            <span class="card-sub">Weekly, whole account</span>
+          </div>
+          <div class="chart-box"><canvas id="chart-clicks-impr"></canvas></div>
+        </div>
+      </div>
+
+      <div class="chart-grid two-col">
+        <div class="card chart-card">
+          <div class="card-head">
+            <h2>Cost by campaign</h2>
+            <span class="card-sub">Share of £48,175.71 spend</span>
+          </div>
+          <div class="chart-box donut-box"><canvas id="chart-cost-share"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Top campaigns by spend</h2>
+            <span class="card-sub">Click a row to see it in Campaigns</span>
+          </div>
+          <div class="table-wrap" id="top-campaigns-wrap"></div>
+        </div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="card-head">
+          <h2>Cost / conv. vs Target CPA</h2>
+          <span class="card-sub">Actual cost per conversion against each campaign's Target CPA setting</span>
+        </div>
+        <div class="chart-box tall-box"><canvas id="chart-cpa-vs-target"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ================= CAMPAIGNS ================= -->
+    <section id="tab-campaigns" class="tab-panel">
+      <div class="page-head">
+        <h1>Campaigns</h1>
+        <div class="date-range">1 Jun 2026 – 6 Sep 2026</div>
+      </div>
+      <div class="card">
+        <div class="table-wrap" id="campaigns-table-wrap"></div>
+        <p class="table-hint">Click a campaign row for its week-by-week breakdown.</p>
+      </div>
+
+      <div class="card" id="campaign-detail-card">
+        <div class="card-head">
+          <h2 id="detail-title">Campaign breakdown</h2>
+          <span class="card-sub" id="detail-sub"></span>
+        </div>
+        <div class="detail-stats" id="detail-stats"></div>
+        <div class="chart-box" id="detail-chart-box"><canvas id="chart-campaign-detail"></canvas></div>
+        <div class="table-wrap" id="detail-table-wrap"></div>
+      </div>
+    </section>
+
+    <!-- ================= SEARCH TERMS ================= -->
+    <section id="tab-terms" class="tab-panel">
+      <div class="page-head">
+        <h1>Search terms</h1>
+        <div class="date-range">1 Jun 2026 – 6 Sep 2026 · Top 25 by spend</div>
+      </div>
+      <div class="card">
+        <div class="table-toolbar">
+          <div class="topbar-search table-search">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#5f6368" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5L20.49 19l-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>
+            <input type="text" id="term-search" placeholder="Search search terms" />
+          </div>
+          <span class="card-sub" id="term-count-label"></span>
+        </div>
+        <div class="table-wrap" id="terms-table-wrap"></div>
+      </div>
+    </section>
+
+    <!-- ================= ANALYSIS ================= -->
+    <section id="tab-analysis" class="tab-panel">
+      <div class="page-head">
+        <h1>Campaign analysis</h1>
+        <div class="date-range" id="an-date-range"></div>
+      </div>
+
+      <div class="an-intro-banner">
+        <p><strong>Each campaign's weekly performance is combined with its own filtered search terms and keywords</strong>, so the query-level cause sits next to the campaign-level symptom. Rows shaded from 17 August onward are the three weeks affected by the delivery event; campaign verdicts are based on performance to 16 August.</p>
+        <p class="an-key-finding">Five campaigns achieved a CPA well below their own target while losing more than 90% of impression share to rank, and no campaign in any week lost any impression share to budget. <strong>Across the account the targets are not the binding constraint.</strong></p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Account triage</h2>
+          <span class="card-sub">Verdict at a glance, ranked by spend</span>
+        </div>
+        <div class="table-wrap" id="an-triage-wrap"></div>
+      </div>
+
+      <div class="an-legend card">
+        <span class="an-legend-title">Verdict key</span>
+        <span class="an-pill v-scale">Scale</span><span class="an-legend-desc">Grow this</span>
+        <span class="an-pill v-merge">Merge</span><span class="an-legend-desc">Combine with another campaign</span>
+        <span class="an-pill v-split">Split</span><span class="an-legend-desc">Break into two</span>
+        <span class="an-pill v-question">Question</span><span class="an-legend-desc">Needs an answer first</span>
+        <span class="an-pill v-fix">Fix</span><span class="an-legend-desc">Needs work</span>
+        <span class="an-pill v-pause">Pause</span><span class="an-legend-desc">Stop spending</span>
+        <span class="an-pill v-close">Close</span><span class="an-legend-desc">Shut down</span>
+      </div>
+
+      <div class="an-camp-nav" id="an-camp-nav"></div>
+
+      <div class="an-campaigns" id="an-campaigns"></div>
+
+      <p class="footnote">Calculated from the supplied workbook: weekly campaign performance and the top 250 search terms by spend, filtered per campaign. Search-term coverage varies by campaign, from 96% of spend on brand to 0% on Lifestyle, so query-level conclusions are stronger for some campaigns than others. Conversion counts include fractional values consistent with data-driven attribution across multiple conversion actions.</p>
+    </section>
+
+    <!-- ================= ABOUT ================= -->
+    <section id="tab-about" class="tab-panel">
+      <div class="page-head">
+        <h1>About this account</h1>
+        <div class="date-range">Reporting period 1 Jun 2026 – 6 Sep 2026</div>
+      </div>
+      <div class="card">
+        <div class="about-grid" id="about-grid"></div>
+      </div>
+      <p class="footnote">This is a teaching dashboard built from an uploaded Google Ads export. It is styled to resemble the Google Ads interface for familiarisation purposes only and is not affiliated with, endorsed by, or connected to Google.</p>
+    </section>
+
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="analysis-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
